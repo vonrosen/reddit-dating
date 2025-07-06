@@ -6,24 +6,13 @@ type: submission
 set_locked: true
 action_reason: "Comments locked by AutoMod: Subreddit policy."
 ---
-# Rule: No NSFW posts allowed
-# This rule removes any submission that is marked as NSFW.
+# Rule: require image post
 type: submission
-over_18: true # Targets posts that are marked as NSFW
+~domain: ["i.redd.it", "imgur.com", "reddit.com/gallery/", "ibb.co", "prnt.sc", "postimg.cc", "imgbox.com", "imageupload.io", "instagram.com", "instagr.am", "fbcdn.net", "flickr.com", "flic.kr", "giphy.com", "gfycat.com", "media.tumblr.com"]
 action: remove
-action_reason: "NSFW content is not allowed."
-comment: |
-  Your post was removed because it was marked as NSFW. This subreddit does not allow NSFW content.
----
-# Rule: Post must include an image (no text-only posts)
-# This rule removes any submission that is a self-post (text-only post).
-# It ensures that all posts include some form of media, typically an image.
-type: submission
-is_self: true # Targets text posts
-action: remove
-action_reason: "Post must include an image."
-comment: |
-  Your post was removed because it was a text-only post. All posts in this subreddit must include an image.
+action_reason: "Post does not have an image or gallery"
+comment: "Your post was removed because we only allow image posts on this subreddit."
+set_locked: true
 ---
 # Rule: Enforce Title Format: Age [Preference] Location - Subject
 # This rule uses a regular expression to ensure the post title adheres to the required format.
