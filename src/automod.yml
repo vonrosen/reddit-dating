@@ -19,16 +19,16 @@ set_locked: true
 # If the title does NOT match the specified pattern, the post will be removed.
 # Expected format: Age [YourGender4TheirGender] Location - Subject
 # Example: 33 [M4F] Northeast NY - Looking for a date to the movies
-# Allowed gender/preference codes: M (Male), F (Female), Q (Queer), O (Other).
+# Allowed gender/preference codes: M (Male), F (Female), O (Other).
 type: submission
-~title (regex): '^\d{1,3}\s*\[[MFQO]{1,2}4[MFQO]{1,2}\]\s*.+?\s*-\s*.+$'
+~title (regex): '^\d{1,3}\s*\[[MFO]{1,2}4[MFO]{1,2}\]\s*.+?\s*-\s*.+$'
 action: remove
 action_reason: "Incorrect title format."
 comment: |
   Your post was removed due to an incorrect title format. Please ensure your title follows the format:
   `Age [YourGender4TheirGender] Location - Subject`
   Example: `33 [M4F] Northeast NY - Looking for a date to the movies`
-  Allowed gender/preference codes: M (Male), F (Female), Q (Queer), O (Other).
+  Allowed gender/preference codes: M (Male), F (Female), O (Other).
 ---
 type: link submission
 body_shorter_than: 1
