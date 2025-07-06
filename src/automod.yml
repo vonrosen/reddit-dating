@@ -30,3 +30,18 @@ comment: |
   Example: `33 [M4F] Northeast NY - Looking for a date to the movies`
   Allowed gender/preference codes: M (Male), F (Female), Q (Queer), O (Other).
 ---
+type: link submission
+body_shorter_than: 1
+action: remove
+action_reason: "Post does not contain enough text."
+comment: Your post does not meet the minimum text requirement of 1 character (this is roughly a small paragraph). Please repost with additional information.
+---
+type: gallery submission
+body_shorter_than: 1
+action: remove
+action_reason: "Post does not contain enough text."
+comment: Your post does not meet the minimum text requirement of 1 character (this is roughly a small paragraph). Please repost with additional information.
+---
+type: any
+action: approve
+---
