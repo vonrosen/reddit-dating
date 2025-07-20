@@ -30,3 +30,9 @@ reddit:
         password: ${REDDIT_PASSWORD}
     subreddit:
         name: ${REDDIT_SUBREDDIT_NAME}
+    authUrl: https://www.reddit.com/api/v1/access_token
+    apiBaseUrl: https://oauth.reddit.com
+
+logging:
+  level:
+    root: INFO

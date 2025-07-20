@@ -2,9 +2,9 @@
 # Rule: No comments on posts
 # This rule automatically locks comments on all new submissions,
 # preventing users from posting comments.
-type: submission
-set_locked: true
-action_reason: "Comments locked by AutoMod: Subreddit policy."
+#type: submission
+#set_locked: true
+#action_reason: "Comments locked by AutoMod: Subreddit policy."
 ---
 # Rule: require image post
 type: submission
@@ -44,4 +44,13 @@ comment: Your post does not meet the minimum text requirement of 1 character (th
 ---
 type: any
 action: approve
+---
+type: comment
+~body (regex): '^[lL]$'
+action: remove
+action_reason: "New account"
+comment: "Your comment was removed because it was not a l or L."
+---
+type: comment
+set_locked: true
 ---

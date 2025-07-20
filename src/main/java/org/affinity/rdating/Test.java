@@ -45,7 +45,7 @@ public class Test {
 
         //after is this value: jq '.data.children[0].data.name'
 //        HttpRequest userRequest = HttpRequest.newBuilder()
-//                .uri(URI.create("https://oauth.reddit.com/r/fishcommunity12345/new.json?limit=100&after=t3_1lsplv1"))
+//                .uri(URI.create("https://oauth.reddit.com/r/fishcommunity12345/new.json?limit=1000"))
 //                .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
 //                .header("Authorization", "Bearer " + accessToken)
 //                .build();
@@ -53,21 +53,35 @@ public class Test {
 //        response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
 //        System.out.println(response.body());
 
+        //1m4afk7
+
+
         HttpRequest userRequest = HttpRequest.newBuilder()
-                .uri(URI.create("https://oauth.reddit.com/api/compose"))
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .uri(URI.create("https://oauth.reddit.com/r/fishcommunity12345/comments/1m4afk7.json?limit=1"))
                 .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
                 .header("Authorization", "Bearer " + accessToken)
-                .POST(HttpRequest.BodyPublishers.ofString(
-                        "api_type=json" +
-                        "&from_sr=fishcommunity12345" +
-                        "&subject=Test%20Message" +
-                        "&text=You matched!" +
-                        "&to=Food-Little"))
                 .build();
 
         response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
         System.out.println(response.body());
+
+
+
+//        HttpRequest userRequest = HttpRequest.newBuilder()
+//                .uri(URI.create("https://oauth.reddit.com/api/compose"))
+//                .header("Content-Type", "application/x-www-form-urlencoded")
+//                .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
+//                .header("Authorization", "Bearer " + accessToken)
+//                .POST(HttpRequest.BodyPublishers.ofString(
+//                        "api_type=json" +
+//                        "&from_sr=fishcommunity12345" +
+//                        "&subject=Test%20Message" +
+//                        "&text=You matched!" +
+//                        "&to=Food-Little"))
+//                .build();
+//
+//        response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
+//        System.out.println(response.body());
     }
 
 }
