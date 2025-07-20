@@ -21,26 +21,27 @@ import java.util.stream.Collectors;
 public class MatchingService {
     private static final Logger logger = LoggerFactory.getLogger(MatchingService.class);
 
-    private static final int POST_LIMIT = 1000;
-    private static final int COMMENT_LIMIT = 1000;
-
     private final RedditClient redditClient;
+    private final PostService postService;
     private final MatchRepository matchRepository;
     private final MessageContentService messageContentService;
+    private final CommentService commentService;
 
-    public MatchingService(RedditClient redditClient, MatchRepository matchRepository,
-                           MessageContentService messageContentService) {
+    public MatchingService(RedditClient redditClient, PostService postService, MatchRepository matchRepository,
+                           MessageContentService messageContentService, CommentService commentService) {
         this.redditClient = redditClient;
+        this.postService = postService;
         this.matchRepository = matchRepository;
         this.messageContentService = messageContentService;
+        this.commentService = commentService;
     }
 
     public void match(String subreddit) throws IOException, InterruptedException {
-        List<Post> posts = getPosts(subreddit);
+        List<Post> posts = postService.getPosts(subreddit);
         logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
         Map<Author,List<Post>> authorToPosts =
                 posts.stream().collect(Collectors.groupingBy(Post::getAuthor));
-        Graph<Post> graph = buildGraph(subreddit, authorToPosts);
+        Graph<Post> graph = buildGraph(subreddit, posts, authorToPosts);
         Set<Match> matches = findMatches(graph);
         removeExistingMatches(matches);
         logger.info("Found {} matches in subreddit: {}", matches.size(), subreddit);
@@ -112,32 +113,14 @@ public class MatchingService {
         return matches;
     }
 
-    private List<Post> getPosts(String subreddit) throws IOException, InterruptedException {
-        List<Post> posts = new ArrayList<>();
-        String after = null;
-        do {
-            List<Post> fetchedPosts = redditClient.getPosts(subreddit, after, POST_LIMIT);
-            posts.addAll(fetchedPosts);
-            after = fetchedPosts.getLast().getId();
-        } while(posts.size() == POST_LIMIT);
-        return posts;
-    }
-
-    private Graph<Post> buildGraph(String subreddit, Map<Author,List<Post>> authorToPosts) throws IOException, InterruptedException {
+    private Graph<Post> buildGraph(
+            String subreddit,
+            List<Post> posts,
+            Map<Author,List<Post>> authorToPosts) throws IOException, InterruptedException {
         Graph<Post> graph = new Graph<>();
-        String after = null;
-        List<Post> posts;
-        do {
-            posts = redditClient.getPosts(subreddit, after, POST_LIMIT);
-            if(posts.isEmpty()){
-                return graph;
-            }
-            for (Post post : posts) {
-                addEdgesFromComments(subreddit, post, authorToPosts, graph);
-            }
-            after = posts.getLast().getId();
-
-        } while(posts.size() == POST_LIMIT);
+        for (Post post : posts) {
+            addEdgesFromComments(subreddit, post, authorToPosts, graph);
+        }
         return graph;
     }
 
@@ -146,61 +129,12 @@ public class MatchingService {
             Post post,
             Map<Author,List<Post>> authorToPosts,
             Graph<Post> graph) throws IOException, InterruptedException {
-        List<Comment> comments;
-        String after = null;
-        do {
-            comments = redditClient.getComments(subreddit, post.getId(), after, COMMENT_LIMIT);
-            if(comments.isEmpty()) {
-                return;
+        for(Comment comment : commentService.getComments(subreddit, post)) {
+            List<Post> posts = authorToPosts.get(comment.author());
+            if(posts != null){
+                graph.addEdge(post, posts.getFirst());
             }
-            for(Comment comment : comments){
-                List<Post> posts = authorToPosts.get(comment.author());
-                if(posts != null){
-                    graph.addEdge(post, posts.getFirst());
-                }
-            }
-            after = comments.getLast().id();
-        } while(comments.size() == POST_LIMIT);
+        }
     }
 
-//    private void addAuthors(
-//            String subreddit,
-//            RedditPostListing.Child post,
-//            List<RedditCommentArray.Listing> comments,
-//            Graph<String> graph) {
-//        for (RedditPostListing.Child child : posts.data.children) {
-//            List<RedditCommentArray.Listing> comments = null;
-//            String after = null;
-//            do {
-//                try {
-//                    comments = redditClient.getComments(subreddit, child.data.id, after, COMMENT_LIMIT);
-//                    if(comments.isEmpty()) {
-//                        return;
-//                    }
-//                    addAuthors(subreddit, child, comments, graph);
-//                    after = posts.data.children.getLast().data.id;
-//                }catch (Exception e) {
-//                    logger.error("Error fetching posts from subreddit: " + subreddit, e);
-//                }
-//            } while(posts.data.children.size() == POST_LIMIT);
-//
-//            try {
-//                List<RedditCommentArray.Listing> comments = redditClient.getComments(subreddit, child.data.id, COMMENT_LIMIT);
-//                comments.forEach(
-//                        listing -> {
-//                            listing.data.children.forEach(
-//                                    child -> {
-//                                        if (child.kind.equals("t1")) { // Ensure it's a comment
-//                                            JsonObject commentData = child.data;
-//                                            logger.info("Comment by: " + commentData.get("author") + " on post: " + post.data.id);
-//                                        }
-//                                    }
-//                            );
-//                        }
-//                );
-//            }catch (Exception e) {
-//                logger.error("Error fetching comments for post: " + post.data.id, e);
-//            }
-//        }
-//    }
 }

@@ -27,4 +27,10 @@ public class MatchingController {
     public void match() throws IOException, InterruptedException {
         matchingService.match(subreddit);
     }
+
+    @Operation(summary = "Update comments", description = "Updates like comments with images.")
+    @PostMapping("/updateComments")
+    public void updateComments() throws IOException, InterruptedException {
+        matchingService.match(subreddit);
+    }
 }
