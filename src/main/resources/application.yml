@@ -11,7 +11,7 @@ spring:
       minimum-idle: 10
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -32,6 +32,7 @@ reddit:
         name: ${REDDIT_SUBREDDIT_NAME}
     authUrl: https://www.reddit.com/api/v1/access_token
     apiBaseUrl: https://oauth.reddit.com
+    baseUrl: https://www.reddit.com
 
 logging:
   level:

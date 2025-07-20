@@ -5,6 +5,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.affinity.rdating.enums.ListingKind;
+import org.affinity.rdating.model.Author;
+import org.affinity.rdating.model.Comment;
+import org.affinity.rdating.model.Post;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -49,11 +55,11 @@ public class RedditClient {
         this.gson = gson;
     }
 
-    public RedditPostListing getPosts(String subreddit, int limit) throws IOException, InterruptedException {
+    public List<Post> getPosts(String subreddit, int limit) throws IOException, InterruptedException {
         return getPosts(subreddit, null, limit);
     }
 
-    public RedditPostListing getPosts(String subreddit, String after, int limit) throws IOException, InterruptedException {
+    public List<Post> getPosts(String subreddit, String after, int limit) throws IOException, InterruptedException {
         AuthToken authToken = getAuthToken();
         String url;
         if(after == null){
@@ -67,14 +73,23 @@ public class RedditClient {
                 .header("Authorization", "Bearer " + authToken.accessToken())
                 .build();
         HttpResponse<String> response = httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
-        return gson.fromJson(response.body(), RedditPostListing.class);
+        RedditPostListing redditPostListing = gson.fromJson(response.body(), RedditPostListing.class);
+        List<Post> posts = new ArrayList<>();
+        for (RedditPostListing.Child child : redditPostListing.data.children) {
+            posts.add(new Post(
+                    child.data.id,
+                    child.data.title,
+                    child.data.permalink,
+                    new Author(child.data.author)));
+        }
+        return posts;
     }
 
-    public List<RedditCommentArray.Listing> getComments(String subreddit, String postId, int limit) throws IOException, InterruptedException {
+    public List<Comment> getComments(String subreddit, String postId, int limit) throws IOException, InterruptedException {
         return getComments(subreddit, postId, null, limit);
     }
 
-    public List<RedditCommentArray.Listing> getComments(String subreddit, String postId, String after, int limit) throws IOException, InterruptedException {
+    public List<Comment> getComments(String subreddit, String postId, String after, int limit) throws IOException, InterruptedException {
         AuthToken authToken = getAuthToken();
         String url;
         if(after == null){
@@ -88,8 +103,46 @@ public class RedditClient {
                 .header("Authorization", "Bearer " + authToken.accessToken())
                 .build();
         HttpResponse<String> response = httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
-        return RedditCommentArray.fromJson(response.body(), gson);
+        List<RedditCommentArray.Listing> redditComments = RedditCommentArray.fromJson(response.body(), gson);
+        List<Comment> comments = new ArrayList<>();
+        redditComments.forEach(
+                listing -> listing.data.children.forEach(
+                        child -> {
+                            if(ListingKind.fromKind(child.kind) == ListingKind.COMMENT){
+                                JsonObject commentData = child.data;
+                                comments.add(new Comment(
+                                        commentData.get("id").getAsString(),
+                                        commentData.get("body").getAsString(),
+                                        new Author(commentData.get("author").getAsString())
+                                ));
+                            }
+                        }
+                )
+        );
+        return comments;
     }
+
+    public void sendMessage(String subreddit, String recipient, String subject, String text) throws IOException, InterruptedException {
+        String postBody = String.format("api_type=json" +
+                "&from_sr=%s" +
+                "&subject=%s" +
+                "&text=%s" +
+                "&to=%s",
+                subreddit,
+                subject,
+                text,
+                recipient);
+        AuthToken authToken = getAuthToken();
+        HttpRequest userRequest = HttpRequest.newBuilder()
+                .uri(URI.create(String.format("%s%s", apiBaseUrl, "/api/compose")))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("User-Agent", userAgent)
+                .header("Authorization", "Bearer " + authToken.accessToken())
+                .POST(HttpRequest.BodyPublishers.ofString(postBody))
+                .build();
+        httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
 
     private AuthToken getAuthToken() throws IOException, InterruptedException {
         if(authToken == null || authToken.expired()) {

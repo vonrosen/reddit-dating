@@ -1,10 +1,15 @@
 package org.affinity.rdating.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.affinity.rdating.service.MatchingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
+@Tag(name = "Matching", description = "APIs for matching users in subreddit")
 @RestController
 public class MatchingController {
 
@@ -17,9 +22,9 @@ public class MatchingController {
         this.matchingService = matchingService;
     }
 
+    @Operation(summary = "Run matching algorithm", description = "Triggers the matching process for the configured subreddit.")
     @PostMapping("/match")
-    public void match() {
+    public void match() throws IOException, InterruptedException {
         matchingService.match(subreddit);
     }
 }
-
