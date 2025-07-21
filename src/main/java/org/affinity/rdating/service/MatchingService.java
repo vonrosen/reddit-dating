@@ -129,7 +129,9 @@ public class MatchingService {
             Post post,
             Map<Author,List<Post>> authorToPosts,
             Graph<Post> graph) throws IOException, InterruptedException {
-        for(Comment comment : commentService.getComments(subreddit, post)) {
+        List<Comment> comments = commentService.getComments(subreddit, post);
+        logger.info("Fetched %s comments for post: %s", comments.size(), post.getId());
+        for(Comment comment : comments) {
             List<Post> posts = authorToPosts.get(comment.author());
             if(posts != null){
                 graph.addEdge(post, posts.getFirst());
