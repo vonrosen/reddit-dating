@@ -2,6 +2,7 @@ package org.affinity.rdating.service;
 
 import org.affinity.rdating.client.RedditClient;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.model.PostsAndAfter;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,13 +24,10 @@ public class PostService {
         List<Post> posts = new ArrayList<>();
         String after = null;
         do {
-            List<Post> fetchedPosts = redditClient.getPosts(subreddit, after, POST_LIMIT);
-            if(fetchedPosts.isEmpty()){
-                return posts;
-            }
-            posts.addAll(fetchedPosts);
-            after = fetchedPosts.getLast().getId();
-        } while(posts.size() == POST_LIMIT);
+            PostsAndAfter postsAndAfter = redditClient.getPosts(subreddit, after, POST_LIMIT);
+            posts.addAll(postsAndAfter.getPosts());
+            after = postsAndAfter.getAfter();
+        } while(after != null);
         return posts;
     }
 }

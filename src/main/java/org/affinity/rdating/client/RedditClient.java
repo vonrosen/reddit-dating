@@ -10,6 +10,7 @@ import org.affinity.rdating.enums.ListingKind;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Comment;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.model.PostsAndAfter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -55,11 +56,11 @@ public class RedditClient {
         this.gson = gson;
     }
 
-    public List<Post> getPosts(String subreddit, int limit) throws IOException, InterruptedException {
+    public PostsAndAfter getPosts(String subreddit, int limit) throws IOException, InterruptedException {
         return getPosts(subreddit, null, limit);
     }
 
-    public List<Post> getPosts(String subreddit, String after, int limit) throws IOException, InterruptedException {
+    public PostsAndAfter getPosts(String subreddit, String after, int limit) throws IOException, InterruptedException {
         AuthToken authToken = getAuthToken();
         String url;
         if(after == null){
@@ -82,7 +83,7 @@ public class RedditClient {
                     child.data.permalink,
                     new Author(child.data.author)));
         }
-        return posts;
+        return new PostsAndAfter(posts, redditPostListing.data.after);
     }
 
     public List<Comment> getComments(String subreddit, String postId, int limit) throws IOException, InterruptedException {

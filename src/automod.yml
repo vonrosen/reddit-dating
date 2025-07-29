@@ -45,12 +45,6 @@ comment: Your post does not meet the minimum text requirement of 1 character (th
 type: any
 action: approve
 ---
-type: comment
-~body (regex): '^[lL]$'
-action: remove
-action_reason: "Post body is not correct format."
-comment: "Your comment was removed because it was not a l or L."
----
-type: comment
+type: submission
 set_locked: true
 ---
