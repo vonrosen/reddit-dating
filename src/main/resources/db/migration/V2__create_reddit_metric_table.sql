@@ -1,0 +1,6 @@
+CREATE TABLE reddit_metric (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    hour DATETIME NOT NULL,
+    count BIGINT NOT NULL,
+    UNIQUE KEY uniq_hour (hour)
+);

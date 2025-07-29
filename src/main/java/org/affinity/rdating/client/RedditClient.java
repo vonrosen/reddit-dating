@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.affinity.rdating.enums.ListingKind;
+import org.affinity.rdating.metric.CounterEnabled;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Comment;
 import org.affinity.rdating.model.Post;
@@ -60,6 +61,7 @@ public class RedditClient {
         return getPosts(subreddit, null, limit);
     }
 
+    @CounterEnabled
     public PostsAndAfter getPosts(String subreddit, String after, int limit) throws IOException, InterruptedException {
         AuthToken authToken = getAuthToken();
         String url;
@@ -90,6 +92,7 @@ public class RedditClient {
         return getComments(subreddit, postId, null, limit);
     }
 
+    @CounterEnabled
     public List<Comment> getComments(String subreddit, String postId, String after, int limit) throws IOException, InterruptedException {
         AuthToken authToken = getAuthToken();
         String url;
@@ -123,6 +126,7 @@ public class RedditClient {
         return comments;
     }
 
+    @CounterEnabled
     public void sendMessage(String subreddit, String recipient, String subject, String text) throws IOException, InterruptedException {
         String postBody = String.format("api_type=json" +
                 "&from_sr=%s" +
