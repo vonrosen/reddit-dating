@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class RedditMetricService {
-    private final ConcurrentHashMap<Integer, List<Instant>> instantMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, List<Instant>> hourlyCount = new ConcurrentHashMap<>();
     private final RedditMetricRepository redditMetricRepository;
 
     public RedditMetricService(RedditMetricRepository redditMetricRepository) {
@@ -23,10 +23,10 @@ public class RedditMetricService {
     }
 
     @Async
-    public synchronized void addCount() {
+    public void addCount() {
         Instant now = Instant.now();
         int hour = now.atZone(ZoneId.of("UTC")).getHour();
-        instantMap.computeIfAbsent(hour, _ -> new ArrayList<>()).add(now);
+        hourlyCount.computeIfAbsent(hour, _ -> new ArrayList<>()).add(now);
     }
 
     @Scheduled(cron = "0 0 * * * *") // every hour
@@ -40,20 +40,23 @@ public class RedditMetricService {
     }
 
     @Async
-    public synchronized void writeAndClearAsync() {
-        for (Integer hour : instantMap.keySet()) {
-            int count = instantMap.get(hour).size();
-            Instant hourInstant = ZonedDateTime
-                    .ofInstant(instantMap.get(hour).getFirst(),
-                        ZoneId.of("UTC"))
-                    .withHour(hour)
-                    .withMinute(0)
-                    .withSecond(0)
-                    .withNano(0)
-                    .toInstant();
-            redditMetricRepository.upsertByHour(hourInstant, count);
+    public void writeAndClearAsync() {
+        List<Integer> keys = new ArrayList<>(hourlyCount.keySet());
+        for (Integer hour : keys) {
+            persist(hour, hourlyCount.remove(hour));
         }
-        instantMap.clear();
+    }
+
+    private void persist(int hour, List<Instant> hourCount) {
+        Instant hourInstant = ZonedDateTime
+                .ofInstant(hourCount.getFirst(),
+                        ZoneId.of("UTC"))
+                .withHour(hour)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0)
+                .toInstant();
+        redditMetricRepository.upsertByHour(hourInstant, hourlyCount.size());
     }
 }
 
