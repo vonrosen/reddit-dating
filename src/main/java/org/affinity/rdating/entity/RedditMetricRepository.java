@@ -9,6 +9,6 @@ import java.time.Instant;
 public interface RedditMetricRepository extends CrudRepository<RedditMetricEntity, Long> {
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO reddit_metric (hour, count) VALUES (?1, ?2) ON DUPLICATE KEY UPDATE count = ?2", nativeQuery = true)
+    @Query(value = "INSERT INTO reddit_metric (hour, count) VALUES (?1, ?2) ON DUPLICATE KEY UPDATE count = count + ?2", nativeQuery = true)
     void upsertByHour(Instant hour, int count);
 }

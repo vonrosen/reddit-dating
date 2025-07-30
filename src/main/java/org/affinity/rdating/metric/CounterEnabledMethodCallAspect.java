@@ -24,7 +24,7 @@ public class CounterEnabledMethodCallAspect {
 
     @After("countedMethodsPointCut()")
     public void logCounter() {
-        redditMetricService.addCount(Instant.now());
+        redditMetricService.addCount();
     }
 }
 

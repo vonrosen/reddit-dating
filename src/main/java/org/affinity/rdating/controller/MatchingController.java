@@ -28,6 +28,12 @@ public class MatchingController {
         matchingService.match(subreddit);
     }
 
+    @Operation(summary = "Send registration message", description = "Sends registration message to new users.")
+    @PostMapping("/sendRegistrationMessage")
+    public void sendRegistrationMessage() throws IOException, InterruptedException {
+        matchingService.match(subreddit);
+    }
+
     @Operation(summary = "Update comments", description = "Updates like comments with images.")
     @PostMapping("/updateComments")
     public void updateComments() throws IOException, InterruptedException {
