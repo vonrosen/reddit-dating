@@ -39,7 +39,6 @@ public class RedditMetricService {
     writeAndClearAsync();
   }
 
-  @Async
   public void writeAndClearAsync() {
     List<Integer> keys = new ArrayList<>(hourlyCount.keySet());
     for (Integer hour : keys) {
