@@ -50,7 +50,7 @@ spotless {
 		endWithNewline()
 
 		// Optional: Add a license header
-		licenseHeader '/* (C)$YEAR */' // Example license header
+			licenseHeader '/*\n  Copyright $YEAR, RDating. All rights reserved.\n*/' // Example license header
 	}
 }
 

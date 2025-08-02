@@ -1,4 +1,6 @@
-/* (C)2025 */
+/*
+  Copyright 2025, RDating. All rights reserved.
+*/
 package org.affinity.rdating.entity;
 
 import java.util.List;

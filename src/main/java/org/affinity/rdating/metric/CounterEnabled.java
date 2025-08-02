@@ -1,4 +1,6 @@
-/* (C)2025 */
+/*
+  Copyright 2025, RDating. All rights reserved.
+*/
 package org.affinity.rdating.metric;
 
 import java.lang.annotation.ElementType;
