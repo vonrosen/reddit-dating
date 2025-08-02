@@ -1,4 +1,4 @@
+/* (C)2025 */
 package org.affinity.rdating.model;
 
-public record Author(String username) {
-}
+public record Author(String username) {}

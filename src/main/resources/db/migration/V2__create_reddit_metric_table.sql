@@ -1,4 +1,4 @@
-CREATE TABLE reddit_metric (
+CREATE TABLE IF NOT EXISTS reddit_metric (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     hour DATETIME NOT NULL,
     count BIGINT NOT NULL,

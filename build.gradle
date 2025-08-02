@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '6.20.0'
 }
 
 group = 'org.affinity'
@@ -28,6 +29,29 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+spotless {
+	java {
+		// Target all Java files in the project, excluding build directories
+		target fileTree('.') {
+			include '**/*.java'
+			exclude '**/build/**', '**/build-*/**', '**/bin/**'
+		}
+
+		// Apply Google Java Format
+		googleJavaFormat()
+
+		// Remove unused imports
+		removeUnusedImports()
+
+		// Ensure consistent line endings
+		trimTrailingWhitespace()
+		endWithNewline()
+
+		// Optional: Add a license header
+		licenseHeader '/* (C)$YEAR */' // Example license header
+	}
 }
 
 tasks.named('test') {

@@ -33,6 +33,7 @@ reddit:
     authUrl: https://www.reddit.com/api/v1/access_token
     apiBaseUrl: https://oauth.reddit.com
     baseUrl: https://www.reddit.com
+    redirectUrl: ${REDDIT_REDIRECT_URL}
 
 logging:
   level:

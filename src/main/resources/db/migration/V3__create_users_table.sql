@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     auth_token TEXT,
     auth_token_expires_at TIMESTAMP,
     refresh_token TEXT,
+    auth_request_state_token TEXT,
     registration_message_sent_at TIMESTAMP,
     registered_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,

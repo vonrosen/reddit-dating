@@ -1,3 +1,4 @@
+/* (C)2025 */
 package org.affinity.rdating;
 
 import org.junit.jupiter.api.Test;
@@ -6,8 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class RdatingApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+  @Test
+  void contextLoads() {}
 }
