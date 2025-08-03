@@ -3,4 +3,4 @@
 */
 package org.affinity.rdating.model;
 
-public record Comment(String id, String text, Author author) {}
+public record Upvote(Author author, String subreddit, String title, String id) {}

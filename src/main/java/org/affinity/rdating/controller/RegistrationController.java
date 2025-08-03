@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import org.affinity.rdating.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +27,10 @@ public class RegistrationController {
   }
 
   @Operation(summary = "Register user", description = "Registers a new user in the subreddit.")
-  @PostMapping("/register/{state}/{code}")
-  public void register(@PathVariable("state") String state, @PathVariable("code") String code)
+  @GetMapping("/register")
+  public void register(@Param("state") String state, @Param("code") String code)
       throws IOException, InterruptedException {
-    registrationService.register(subreddit, state, code);
+    registrationService.register(state, code);
   }
 
   @Operation(summary = "Add users", description = "Add new users.")

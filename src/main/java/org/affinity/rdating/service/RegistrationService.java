@@ -8,6 +8,10 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.affinity.rdating.client.RedditClient;
+import org.affinity.rdating.client.UserAuthToken;
+import org.affinity.rdating.entity.PostEntity;
+import org.affinity.rdating.entity.PostRepository;
 import org.affinity.rdating.entity.UserEntity;
 import org.affinity.rdating.entity.UserRepository;
 import org.affinity.rdating.model.Author;
@@ -22,15 +26,21 @@ public class RegistrationService {
 
   private final PostService postService;
   private final UserRepository userRepository;
+  private final PostRepository postRepository;
   private final NotificationService notificationService;
+  private final RedditClient redditClient;
 
   public RegistrationService(
       PostService postService,
       UserRepository userRepository,
-      NotificationService notificationService) {
+      PostRepository postRepository,
+      NotificationService notificationService,
+      RedditClient redditClient) {
     this.postService = postService;
     this.userRepository = userRepository;
+    this.postRepository = postRepository;
     this.notificationService = notificationService;
+    this.redditClient = redditClient;
   }
 
   public void addUsers(String subreddit) throws IOException, InterruptedException {
@@ -48,6 +58,9 @@ public class RegistrationService {
             post -> {
               UserEntity userEntity = new UserEntity(post.getAuthor().username());
               userRepository.save(userEntity);
+              PostEntity postEntity =
+                  new PostEntity(userEntity, post.getId(), post.getTitle(), post.getPermaLink());
+              postRepository.save(postEntity);
               logger.info("Added new user: {}", post.getAuthor().username());
             });
   }
@@ -72,5 +85,15 @@ public class RegistrationService {
             });
   }
 
-  public void register(String subreddit, String state, String code) {}
+  public void register(String state, String code) throws IOException, InterruptedException {
+    UserEntity userEntity = userRepository.findByAuthRequestStateToken(state).orElseThrow();
+    UserAuthToken userAuthToken =
+        redditClient.getUserAuthTokenFromCode(code, new Author(userEntity.getUserName()));
+    userEntity.setAuthToken(userAuthToken.getAccessToken());
+    userEntity.setRefreshToken(userAuthToken.getRefreshToken());
+    userEntity.setAuthTokenExpiresAt(userAuthToken.getExpires());
+    userEntity.setRegisteredAt(Instant.now());
+    userRepository.save(userEntity);
+    logger.info("User {} registered successfully", userEntity.getUserName());
+  }
 }

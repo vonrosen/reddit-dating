@@ -35,6 +35,8 @@ reddit:
     baseUrl: https://www.reddit.com
     redirectUrl: ${REDDIT_REDIRECT_URL}
 
+key: ${KEY}
+
 logging:
   level:
     root: INFO

@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.affinity.rdating.client.RedditClient;
 import org.affinity.rdating.entity.MatchEntity;
 import org.affinity.rdating.entity.MatchRepository;
+import org.affinity.rdating.entity.PostEntity;
+import org.affinity.rdating.entity.UserRepository;
 import org.affinity.rdating.model.Author;
-import org.affinity.rdating.model.Comment;
 import org.affinity.rdating.model.Match;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.model.Upvote;
 import org.affinity.rdating.util.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,27 +24,31 @@ import org.springframework.stereotype.Service;
 public class MatchingService {
   private static final Logger logger = LoggerFactory.getLogger(MatchingService.class);
 
-  private final RedditClient redditClient;
   private final PostService postService;
   private final MatchRepository matchRepository;
+  private final UpVoteService upVoteService;
   private final NotificationService notificationService;
-  private final CommentService commentService;
+  private final UserRepository userRepository;
 
   public MatchingService(
-      RedditClient redditClient,
       PostService postService,
+      UpVoteService upVoteService,
       MatchRepository matchRepository,
       NotificationService notificationService,
-      CommentService commentService) {
-    this.redditClient = redditClient;
+      UserRepository userRepository) {
     this.postService = postService;
+    this.upVoteService = upVoteService;
     this.matchRepository = matchRepository;
     this.notificationService = notificationService;
-    this.commentService = commentService;
+    this.userRepository = userRepository;
   }
 
   public void match(String subreddit) throws IOException, InterruptedException {
-    List<Post> posts = postService.getPosts(subreddit);
+    List<Post> posts =
+        userRepository.findByRegisteredAtIsNotNull().stream()
+            .map(user -> user.getPost())
+            .map(PostEntity::toPost)
+            .toList();
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
     Map<Author, List<Post>> authorToPosts =
         posts.stream().collect(Collectors.groupingBy(Post::getAuthor));
@@ -122,18 +127,21 @@ public class MatchingService {
       throws IOException, InterruptedException {
     Graph<Post> graph = new Graph<>();
     for (Post post : posts) {
-      addEdgesFromComments(subreddit, post, authorToPosts, graph);
+      addEdgesFromUpVotes(subreddit, post, authorToPosts, graph);
     }
     return graph;
   }
 
-  private void addEdgesFromComments(
+  private void addEdgesFromUpVotes(
       String subreddit, Post post, Map<Author, List<Post>> authorToPosts, Graph<Post> graph)
       throws IOException, InterruptedException {
-    List<Comment> comments = commentService.getComments(subreddit, post);
-    logger.info("Fetched %s comments for post: %s", comments.size(), post.getId());
-    for (Comment comment : comments) {
-      List<Post> posts = authorToPosts.get(comment.author());
+    List<Upvote> upvotes =
+        upVoteService.getUpvotes(post.getAuthor(), subreddit).stream()
+            .filter(upvote -> !upvote.author().equals(post.getAuthor()))
+            .toList();
+    logger.info("Fetched %s upvotes for author: %s", upvotes.size(), post.getAuthor().username());
+    for (Upvote upvote : upvotes) {
+      List<Post> posts = authorToPosts.get(upvote.author());
       if (posts != null) {
         graph.addEdge(post, posts.getFirst());
       }

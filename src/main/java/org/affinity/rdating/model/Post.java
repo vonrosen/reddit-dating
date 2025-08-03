@@ -3,7 +3,6 @@
 */
 package org.affinity.rdating.model;
 
-import java.util.List;
 import java.util.Objects;
 
 public class Post implements Comparable<Post> {
@@ -12,14 +11,12 @@ public class Post implements Comparable<Post> {
   private final String title;
   private final Author author;
   private final String permaLink;
-  private final List<Comment> comments;
 
   public Post(String id, String title, String permaLink, Author author) {
     this.id = id;
     this.title = title;
     this.author = author;
     this.permaLink = permaLink;
-    this.comments = List.of();
   }
 
   public String getId() {
@@ -36,10 +33,6 @@ public class Post implements Comparable<Post> {
 
   public Author getAuthor() {
     return author;
-  }
-
-  public void addComment(Comment comment) {
-    comments.add(comment);
   }
 
   @Override
