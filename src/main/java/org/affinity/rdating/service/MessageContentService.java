@@ -44,10 +44,12 @@ public class MessageContentService {
 
   private String getAuthorizationUrl(UUID stateToken) {
     return redditUrl
-            + "/api/v1/authorize?client_id="
-            + redditClientId
-            + "%26response_type=code%26state="
-            + stateToken.toString() + "%26redirect_uri="
-            + redirectUrl + "%26duration=permanent%26scope=history";
+        + "/api/v1/authorize?client_id="
+        + redditClientId
+        + "%26response_type=code%26state="
+        + stateToken.toString()
+        + "%26redirect_uri="
+        + redirectUrl
+        + "%26duration=permanent%26scope=history";
   }
 }

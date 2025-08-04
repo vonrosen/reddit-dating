@@ -50,12 +50,12 @@ public class RedditMetricService {
 
   private void persist(int hour, List<Instant> hourCount) {
     Instant hourInstant =
-        ZonedDateTime.ofInstant(hourCount.get(0), ZoneId.of("UTC"))
+        ZonedDateTime.ofInstant(hourCount.getFirst(), ZoneId.of("UTC"))
             .withHour(hour)
             .withMinute(0)
             .withSecond(0)
             .withNano(0)
             .toInstant();
-    redditMetricRepository.upsertByHour(hourInstant, hourlyCount.size());
+    redditMetricRepository.upsertByHour(hourInstant, hourCount.size());
   }
 }
