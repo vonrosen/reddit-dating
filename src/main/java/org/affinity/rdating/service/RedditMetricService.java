@@ -31,7 +31,7 @@ public class RedditMetricService {
     hourlyCount.computeIfAbsent(hour, h -> new ArrayList<>()).add(now);
   }
 
-  @Scheduled(cron = "0 0 * * * *") // every hour
+  @Scheduled(cron = "0 * * * * *") // every minute
   public void scheduledWrite() {
     writeAndClearAsync();
   }
@@ -50,7 +50,7 @@ public class RedditMetricService {
 
   private void persist(int hour, List<Instant> hourCount) {
     Instant hourInstant =
-        ZonedDateTime.ofInstant(hourCount.getFirst(), ZoneId.of("UTC"))
+        ZonedDateTime.ofInstant(hourCount.get(0), ZoneId.of("UTC"))
             .withHour(hour)
             .withMinute(0)
             .withSecond(0)

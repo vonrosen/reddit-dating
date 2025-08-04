@@ -37,14 +37,17 @@ public class MessageContentService {
   public String createRegistrationMessageContent(Author to, UUID stateToken) {
     return String.format(
         "Hello %s,\n\nWelcome to RDating! To authorize RDating to match you with other daters click the following link.\n"
-            + "%s\n"
+            + "%s\n\n"
             + "Best regards,\nThe RDating Team",
         to.username(), getAuthorizationUrl(stateToken));
   }
 
   private String getAuthorizationUrl(UUID stateToken) {
-    return String.format(
-        "%s/api/v1/authorize?client_id=%s&response_type=code&state=%s&redirect_uri=%s&duration=permanent&scope=history",
-        redditUrl, redditClientId, stateToken.toString(), redirectUrl);
+    return redditUrl
+            + "/api/v1/authorize?client_id="
+            + redditClientId
+            + "%26response_type=code%26state="
+            + stateToken.toString() + "%26redirect_uri="
+            + redirectUrl + "%26duration=permanent%26scope=history";
   }
 }

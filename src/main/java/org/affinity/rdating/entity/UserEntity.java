@@ -16,8 +16,7 @@ public class UserEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @OneToOne(mappedBy = "user")
   private PostEntity post;
 
   @Column(name = "user_name", nullable = false, unique = true)

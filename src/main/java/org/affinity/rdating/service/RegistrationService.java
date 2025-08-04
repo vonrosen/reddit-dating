@@ -16,6 +16,7 @@ import org.affinity.rdating.entity.UserEntity;
 import org.affinity.rdating.entity.UserRepository;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,11 @@ public class RegistrationService {
     this.redditClient = redditClient;
   }
 
+
   public void addUsers(String subreddit) throws IOException, InterruptedException {
-    List<Post> posts = postService.getPosts(subreddit);
+    Set<Post> posts = postService.getPosts(subreddit).stream()
+            .filter(CollectionUtils.distinctByKey(Post::getAuthor))
+            .collect(Collectors.toSet());
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
     Map<Author, UserEntity> authorToUser =
         userRepository.findAll().stream()

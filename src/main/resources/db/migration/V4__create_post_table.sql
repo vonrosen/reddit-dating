@@ -3,11 +3,11 @@ CREATE TABLE IF NOT EXISTS `post` (
     user_id BIGINT NOT NULL,
     post_id VARCHAR(255) NOT NULL,
     title TEXT NOT NULL,
-    permalink TEXT NOT NULL,
+    permalink VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `post` ADD CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES users(id);
+ALTER TABLE `post` ADD CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES user(id);
 
 CREATE UNIQUE INDEX idx_user_id ON `post`(user_id);
