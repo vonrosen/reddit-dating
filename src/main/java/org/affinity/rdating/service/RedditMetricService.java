@@ -31,6 +31,7 @@ public class RedditMetricService {
     hourlyCount.computeIfAbsent(hour, h -> new ArrayList<>()).add(now);
   }
 
+  // @Scheduled(cron = "0 0 * * * *") // every hour
   @Scheduled(cron = "0 * * * * *") // every minute
   public void scheduledWrite() {
     writeAndClearAsync();

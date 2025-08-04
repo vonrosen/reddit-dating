@@ -71,8 +71,7 @@ public class EncryptionService {
 
   public String decrypt(String encryptedValue) {
     try {
-      return Base64.getEncoder()
-          .encodeToString(decryptionCipher.doFinal(encryptedValue.getBytes()));
+      return new String(decryptionCipher.doFinal(Base64.getDecoder().decode(encryptedValue)));
     } catch (BadPaddingException | IllegalBlockSizeException e) {
       logger.error("Decryption failed", e);
       throw new IllegalStateException(e);
