@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.affinity.rdating.entity.MatchEntity;
-import org.affinity.rdating.entity.MatchRepository;
-import org.affinity.rdating.entity.PostEntity;
-import org.affinity.rdating.entity.UserRepository;
+import org.affinity.rdating.entity.*;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Match;
 import org.affinity.rdating.model.Post;
@@ -46,7 +43,7 @@ public class MatchingService {
   public void match(String subreddit) throws IOException, InterruptedException {
     List<Post> posts =
         userRepository.findByRegisteredAtIsNotNull().stream()
-            .map(user -> user.getPost())
+            .map(UserEntity::getPost)
             .map(PostEntity::toPost)
             .toList();
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
@@ -135,11 +132,8 @@ public class MatchingService {
   private void addEdgesFromUpVotes(
       String subreddit, Post post, Map<Author, List<Post>> authorToPosts, Graph<Post> graph)
       throws IOException, InterruptedException {
-    List<Upvote> upvotes =
-        upVoteService.getUpvotes(post.getAuthor(), subreddit).stream()
-            .filter(upvote -> !upvote.author().equals(post.getAuthor()))
-            .toList();
-    logger.info("Fetched %s upvotes for author: %s", upvotes.size(), post.getAuthor().username());
+    List<Upvote> upvotes = upVoteService.getUpvotes(post.getAuthor(), subreddit).stream().toList();
+    logger.info("Fetched {} upvotes for author: {}", upvotes.size(), post.getAuthor().username());
     for (Upvote upvote : upvotes) {
       List<Post> posts = authorToPosts.get(upvote.author());
       if (posts != null) {

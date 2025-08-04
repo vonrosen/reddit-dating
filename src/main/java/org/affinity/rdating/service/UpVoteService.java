@@ -43,14 +43,14 @@ public class UpVoteService {
 
   private UserAuthToken getUserAuthToken(UserEntity userEntity)
       throws IOException, InterruptedException {
-    if (userEntity.getUserAuthToken().expired()) {
-      UserAuthToken userAuthToken =
-          redditClient.getUserAuthTokenFromRefreshToken(userEntity.getUserAuthToken());
-      userEntity.setAuthToken(userAuthToken.getAccessToken());
-      userEntity.setAuthTokenExpiresAt(userAuthToken.getExpires());
-      userRepository.save(userEntity);
-      return userAuthToken;
+    if (!userEntity.getUserAuthToken().expired()) {
+      return userEntity.getUserAuthToken();
     }
-    return userEntity.getUserAuthToken();
+    UserAuthToken userAuthToken =
+        redditClient.getUserAuthTokenFromRefreshToken(userEntity.getUserAuthToken());
+    userEntity.setAuthToken(userAuthToken.getAccessToken());
+    userEntity.setAuthTokenExpiresAt(userAuthToken.getExpires());
+    userRepository.save(userEntity);
+    return userAuthToken;
   }
 }
