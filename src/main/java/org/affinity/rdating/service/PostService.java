@@ -27,8 +27,8 @@ public class PostService {
     String after = null;
     do {
       PostsAndAfter postsAndAfter = redditClient.getPosts(subreddit, after, POST_LIMIT);
-      posts.addAll(postsAndAfter.getPosts());
-      after = postsAndAfter.getAfter();
+      posts.addAll(postsAndAfter.posts());
+      after = postsAndAfter.after();
     } while (after != null);
     return posts;
   }
