@@ -59,7 +59,7 @@ public class RedditClient {
   }
 
   @CounterEnabled
-  public PostsAndAfter getPosts(String subreddit, String after, int limit)
+  public PostsAndAfter getPostsNewestFirst(String subreddit, String after, int limit)
       throws IOException, InterruptedException {
     AuthToken authToken = getAuthToken();
     String url;
@@ -85,7 +85,8 @@ public class RedditClient {
               child.data.id,
               child.data.title,
               child.data.permalink,
-              new Author(child.data.author)));
+              new Author(child.data.author),
+              child.data.over_18));
     }
     return new PostsAndAfter(posts, redditPostListing.data.after);
   }
@@ -105,6 +106,23 @@ public class RedditClient {
             .header("User-Agent", userAgent)
             .header("Authorization", "Bearer " + authToken.getAccessToken())
             .POST(HttpRequest.BodyPublishers.ofString(postBody))
+            .build();
+    httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
+  }
+
+  @CounterEnabled
+  public void removePost(String postId) throws IOException, InterruptedException {
+    AuthToken authToken = getAuthToken();
+    HttpRequest userRequest =
+        HttpRequest.newBuilder()
+            .uri(URI.create(String.format("%s%s", apiBaseUrl, "/api/remove")))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("User-Agent", userAgent)
+            .header("Authorization", "Bearer " + authToken.getAccessToken())
+            .POST(
+                HttpRequest.BodyPublishers.ofString(
+                    String.format(
+                        "id=%s&spam=false&mod_note=Removed by RDating as duplciate post", postId)))
             .build();
     httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
   }

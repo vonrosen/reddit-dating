@@ -42,6 +42,7 @@ public class RedditPostListing {
     public GalleryData gallery_data;
     public Preview preview;
     public String id;
+    public boolean over_18;
   }
 
   public static class MediaMetadata {

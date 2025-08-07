@@ -30,6 +30,12 @@ public class PostEntity {
   @Column(name = "permalink", nullable = false)
   private String permalink;
 
+  @Column(name = "is_nsfw")
+  private Boolean isNSFW = false;
+
+  @Column(name = "deleted_at")
+  private Instant deletedAt;
+
   @Column(name = "created_at", nullable = false)
   private Instant createdAt;
 
@@ -101,6 +107,22 @@ public class PostEntity {
 
   @Transient
   public Post toPost() {
-    return new Post(postId, title, permalink, new Author(user.getUserName()));
+    return new Post(postId, title, permalink, new Author(user.getUserName()), isNSFW);
+  }
+
+  public Boolean getNSFW() {
+    return isNSFW;
+  }
+
+  public void setNSFW(Boolean NSFW) {
+    isNSFW = NSFW;
+  }
+
+  public Instant getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(Instant deletedAt) {
+    this.deletedAt = deletedAt;
   }
 }

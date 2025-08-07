@@ -8,6 +8,7 @@ import java.time.Instant;
 import org.affinity.rdating.client.UserAuthToken;
 import org.affinity.rdating.converter.SensitiveDataConverter;
 import org.affinity.rdating.model.Author;
+import org.affinity.rdating.model.User;
 
 @Entity
 @Table(name = "user")
@@ -131,5 +132,17 @@ public class UserEntity {
 
   public void setRegisteredAt(Instant registeredAt) {
     this.registeredAt = registeredAt;
+  }
+
+  public User toUser() {
+    return new User(
+        id,
+        userName,
+        getUserAuthToken(),
+        authRequestStateToken,
+        registrationMessageSentAt,
+        registeredAt,
+        createdAt,
+        updatedAt);
   }
 }

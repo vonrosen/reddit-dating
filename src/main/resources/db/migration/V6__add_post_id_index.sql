@@ -1,0 +1,1 @@
+CREATE INDEX idx_post_id ON post (post_id);

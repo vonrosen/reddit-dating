@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   Optional<UserEntity> findByAuthRequestStateToken(String authRequestStateToken);
 
   Optional<UserEntity> findByUserName(String userName);
+
+  void deleteByUserName(String userName);
 }

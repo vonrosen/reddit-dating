@@ -48,3 +48,9 @@ action: approve
 type: submission
 set_locked: true
 ---
+# Remove posts with NSFW tags
+title (includes, regex): '[nsfw]|[NSFW]'
+body (includes, regex): '[nsfw]|[NSFW]'
+action: remove
+comment: Your post has been removed because it contains NSFW tags. This subreddit does not allow NSFW content.
+---

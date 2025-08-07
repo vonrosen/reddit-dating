@@ -46,7 +46,7 @@ public class RegistrationService {
 
   public void addUsers(String subreddit) throws IOException, InterruptedException {
     Set<Post> posts =
-        postService.getPosts(subreddit).stream()
+        postService.getPostsFromRedditNewestFirst(subreddit).stream()
             .filter(CollectionUtils.distinctByKey(Post::getAuthor))
             .collect(Collectors.toSet());
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);

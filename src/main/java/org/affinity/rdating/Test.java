@@ -3,6 +3,8 @@
 */
 package org.affinity.rdating;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,38 +26,44 @@ public class Test {
                 String.format("%s:%s", clientId, secret).getBytes(StandardCharsets.UTF_8));
 
     HttpClient client = HttpClient.newHttpClient();
-    //    HttpRequest request =
-    //        HttpRequest.newBuilder()
-    //            .uri(URI.create("https://www.reddit.com/api/v1/access_token"))
-    //            .header("Content-Type", "application/x-www-form-urlencoded")
-    //            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
-    //            .header("Authorization", String.format("Basic %s", credentials))
-    //            .POST(
-    //                HttpRequest.BodyPublishers.ofString(
-    //                    String.format("grant_type=password&username=%s&password=%s", user,
-    // password)))
-    //            .build();
-    //
-    //    HttpResponse<String> response = client.send(request,
-    // HttpResponse.BodyHandlers.ofString());
-    //    String responseBody = response.body();
-    //    String accessToken = null;
-    //    try {
-    //      JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
-    //      accessToken = jsonNode.get("access_token").asText();
-    //    } catch (Exception e) {
-    //      System.err.println("Failed to parse access_token: " + e.getMessage());
-    //    }
-    //    System.out.println("accessToken = " + accessToken);
-    //
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create("https://www.reddit.com/api/v1/access_token"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
+            .header("Authorization", String.format("Basic %s", credentials))
+            .POST(
+                HttpRequest.BodyPublishers.ofString(
+                    String.format("grant_type=password&username=%s&password=%s", user, password)))
+            .build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    String responseBody = response.body();
+    String accessToken = null;
+    try {
+      JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
+      accessToken = jsonNode.get("access_token").asText();
+    } catch (Exception e) {
+      System.err.println("Failed to parse access_token: " + e.getMessage());
+    }
+    System.out.println("accessToken = " + accessToken);
+
+    HttpRequest userRequest =
+        HttpRequest.newBuilder()
+            .uri(URI.create("https://oauth.reddit.com/r/r4r/new.json?limit=1"))
+            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
+            .header("Authorization", "Bearer " + accessToken)
+            .build();
+
+    response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
+    System.out.println(response.body());
+
     //    HttpRequest userRequest =
     //        HttpRequest.newBuilder()
-    //            .uri(
-    //                URI.create(
-    //
-    // "https://oauth.reddit.com/r/fishcommunity12345/new.json?limit=1&after=t3_1m4afk7"))
+    //            .uri(URI.create("https://oauth.reddit.com/api/del"))
     //            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
     //            .header("Authorization", "Bearer " + accessToken)
+    //            .POST(HttpRequest.BodyPublishers.ofString("id=1mjh42q")) // 1mjh42q
     //            .build();
     //
     //    response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
@@ -92,7 +100,7 @@ public class Test {
     // HttpResponse.BodyHandlers.ofString());
     //    System.out.println(response.body());
 
-    String accessToken = null;
+    //    String accessToken = null;
     //    try {
     //      JsonNode jsonNode = new ObjectMapper().readTree(response.body());
     //      accessToken = jsonNode.get("access_token").asText();
@@ -102,16 +110,18 @@ public class Test {
     //    System.out.println("accessToken = " + accessToken);
     //
 
-    HttpRequest userRequest =
-        HttpRequest.newBuilder()
-            .uri(
-                URI.create(
-                    "https://oauth.reddit.com/user/vonrosen2020/upvoted?limit=1&after=t3_1m52t4f"))
-            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
-            .header("Authorization", "Bearer " + accessToken)
-            .build();
-    HttpResponse<String> response = client.send(userRequest, HttpResponse.BodyHandlers.ofString());
-    System.out.println(response.body());
+    //    HttpRequest userRequest =
+    //        HttpRequest.newBuilder()
+    //            .uri(
+    //                URI.create(
+    //
+    // "https://oauth.reddit.com/user/vonrosen2020/upvoted?limit=1&after=t3_1m52t4f"))
+    //            .header("User-Agent", "rdating/0.1 (by /u/Food-Little)")
+    //            .header("Authorization", "Bearer " + accessToken)
+    //            .build();
+    //    HttpResponse<String> response = client.send(userRequest,
+    // HttpResponse.BodyHandlers.ofString());
+    //    System.out.println(response.body());
 
     //        HttpRequest userRequest = HttpRequest.newBuilder()
     //                .uri(URI.create("https://oauth.reddit.com/api/compose"))

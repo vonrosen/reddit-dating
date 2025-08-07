@@ -88,8 +88,8 @@ public class MatchingService {
             matchEntity ->
                 existingMatches.remove(
                     new Match(
-                        new Post("", "", "", new Author(matchEntity.getUser1())),
-                        new Post("", "", "", new Author(matchEntity.getUser2())))));
+                        new Post("", "", "", new Author(matchEntity.getUser1()), false),
+                        new Post("", "", "", new Author(matchEntity.getUser2()), false))));
   }
 
   private Set<Match> findMatches(Graph<Post> graph) {

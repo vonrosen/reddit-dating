@@ -43,7 +43,7 @@ public class RegistrationController {
       summary = "Send registration message",
       description = "Sends registration message to new users.")
   @PostMapping("/sendRegistrationMessages")
-  public void sendRegistrationMessages() throws IOException, InterruptedException {
+  public void sendRegistrationMessages() {
     registrationService.sendRegistrationMessages(subreddit);
   }
 }
