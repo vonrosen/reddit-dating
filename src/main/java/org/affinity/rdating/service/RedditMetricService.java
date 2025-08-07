@@ -34,15 +34,15 @@ public class RedditMetricService {
   // @Scheduled(cron = "0 0 * * * *") // every hour
   @Scheduled(cron = "0 * * * * *") // every minute
   public void scheduledWrite() {
-    writeAndClearAsync();
+    writeAndClear();
   }
 
   @PreDestroy
   public void onShutdown() {
-    writeAndClearAsync();
+    writeAndClear();
   }
 
-  public void writeAndClearAsync() {
+  public void writeAndClear() {
     List<Integer> keys = new ArrayList<>(hourlyCount.keySet());
     for (Integer hour : keys) {
       persist(hour, hourlyCount.remove(hour));

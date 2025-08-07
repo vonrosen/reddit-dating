@@ -20,11 +20,15 @@ import java.util.List;
 import org.affinity.rdating.enums.ListingKind;
 import org.affinity.rdating.metric.CounterEnabled;
 import org.affinity.rdating.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RedditClient {
+  private static final Logger logger = LoggerFactory.getLogger(RedditClient.class);
+
   private final HttpClient httpClient = HttpClient.newHttpClient();
   private final Gson gson;
 
@@ -119,12 +123,11 @@ public class RedditClient {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .header("User-Agent", userAgent)
             .header("Authorization", "Bearer " + authToken.getAccessToken())
-            .POST(
-                HttpRequest.BodyPublishers.ofString(
-                    String.format(
-                        "id=%s&spam=false&mod_note=Removed by RDating as duplciate post", postId)))
+            .POST(HttpRequest.BodyPublishers.ofString(String.format("id=%s&spam=false", postId)))
             .build();
-    httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
+    HttpResponse<String> response =
+        httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
+    logger.info("Removed post {}: {}", postId, response.body());
   }
 
   @CounterEnabled
