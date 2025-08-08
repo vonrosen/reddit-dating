@@ -126,7 +126,7 @@ public class RedditClient {
             .POST(
                 HttpRequest.BodyPublishers.ofString(
                     String.format(
-                        "api_type=json&id=%s&spam=True", ListingKind.POST.getKind() + postId)))
+                        "api_type=json&id=%s&spam=True", ListingKind.POST.getKind() + "_" + postId)))
             .build();
     HttpResponse<String> response =
         httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
@@ -252,6 +252,7 @@ public class RedditClient {
 
   @CounterEnabled
   private AuthToken getAuthTokenFromOrigin() throws IOException, InterruptedException {
+    logger.info("Fetching new auth token from Reddit");
     String credentials =
         Base64.getEncoder()
             .encodeToString(

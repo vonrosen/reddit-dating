@@ -1,1 +1,0 @@
-CREATE INDEX idx_user_name ON moderator (user_name);
