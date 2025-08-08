@@ -63,19 +63,12 @@ public class UserEntity {
     this.updatedAt = Instant.now();
   }
 
-  @Transient
-  public UserAuthToken getUserAuthToken() {
-    return new UserAuthToken(
-        new Author(userName),
-        authToken,
-        refreshToken,
-        authTokenScope,
-        authTokenType,
-        authTokenExpiresAt);
-  }
-
   public String getUserName() {
     return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
   }
 
   public Instant getRegistrationMessageSentAt() {
@@ -134,6 +127,23 @@ public class UserEntity {
     this.registeredAt = registeredAt;
   }
 
+  public void setAuthTokenType(String authTokenType) {
+    this.authTokenType = authTokenType;
+  }
+
+  public void setAuthTokenScope(String authTokenScope) {
+    this.authTokenScope = authTokenScope;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  @Transient
   public User toUser() {
     return new User(
         id,
@@ -144,5 +154,16 @@ public class UserEntity {
         registeredAt,
         createdAt,
         updatedAt);
+  }
+
+  @Transient
+  public UserAuthToken getUserAuthToken() {
+    return new UserAuthToken(
+        new Author(userName),
+        authToken,
+        refreshToken,
+        authTokenScope,
+        authTokenType,
+        authTokenExpiresAt);
   }
 }

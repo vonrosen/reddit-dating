@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.affinity.rdating.client.RedditClient;
-import org.affinity.rdating.entity.PostEntity;
 import org.affinity.rdating.entity.PostRepository;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Post;
@@ -28,10 +27,6 @@ public class PostService {
   public PostService(RedditClient redditClient, PostRepository postRepository) {
     this.redditClient = redditClient;
     this.postRepository = postRepository;
-  }
-
-  public List<Post> getNsfwPosts() {
-    return postRepository.findAllByisNSFWTrue().stream().map(PostEntity::toPost).toList();
   }
 
   public List<Post> getPostsFromRedditNewestFirst(String subreddit)

@@ -9,6 +9,10 @@ public enum ListingKind {
 
   private final String kind;
 
+  public String getKind() {
+    return kind;
+  }
+
   ListingKind(String kind) {
     this.kind = kind;
   }

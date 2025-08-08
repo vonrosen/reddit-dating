@@ -119,15 +119,18 @@ public class RedditClient {
     AuthToken authToken = getAuthToken();
     HttpRequest userRequest =
         HttpRequest.newBuilder()
-            .uri(URI.create(String.format("%s%s", apiBaseUrl, "/api/remove")))
+            .uri(URI.create(String.format("%s%s", apiBaseUrl, "/api/remove?raw_json=1")))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .header("User-Agent", userAgent)
             .header("Authorization", "Bearer " + authToken.getAccessToken())
-            .POST(HttpRequest.BodyPublishers.ofString(String.format("id=%s&spam=false", postId)))
+            .POST(
+                HttpRequest.BodyPublishers.ofString(
+                    String.format(
+                        "api_type=json&id=%s&spam=True", ListingKind.POST.getKind() + postId)))
             .build();
     HttpResponse<String> response =
         httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());
-    logger.info("Removed post {}: {}", postId, response.body());
+    logger.info("Attempted to remove post {}: Response code {}", postId, response.statusCode());
   }
 
   @CounterEnabled
