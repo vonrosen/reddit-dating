@@ -115,7 +115,7 @@ public class RedditClient {
   }
 
   @CounterEnabled
-  public void removePost(PostId postId) throws IOException, InterruptedException {
+  public void removePost(PostId postId, String reason) throws IOException, InterruptedException {
     AuthToken authToken = getAuthToken();
     HttpRequest userRequest =
         HttpRequest.newBuilder()
@@ -125,7 +125,8 @@ public class RedditClient {
             .header("Authorization", "Bearer " + authToken.getAccessToken())
             .POST(
                 HttpRequest.BodyPublishers.ofString(
-                    String.format("api_type=json&id=%s&spam=True", postId.fullName())))
+                    String.format(
+                        "api_type=json&id=%s&spam=false&reason=%s", postId.fullName(), reason)))
             .build();
     HttpResponse<String> response =
         httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());

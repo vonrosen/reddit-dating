@@ -82,12 +82,21 @@ public class MatchingService {
     matchRepository
         .findAll()
         .forEach(
-            matchEntity ->
-                existingMatches.remove(
-                    new Match(
-                        new Post(new PostId(""), "", "", new Author(matchEntity.getUser1()), false),
-                        new Post(
-                            new PostId(""), "", "", new Author(matchEntity.getUser2()), false))));
+            matchEntity -> {
+              boolean exists =
+                  existingMatches.remove(
+                      new Match(
+                          new Post(
+                              new PostId(""), "", "", new Author(matchEntity.getUser1()), false),
+                          new Post(
+                              new PostId(""), "", "", new Author(matchEntity.getUser2()), false)));
+              if (exists) {
+                logger.info(
+                    "Users have already been matched: {} and {}",
+                    matchEntity.getUser1(),
+                    matchEntity.getUser2());
+              }
+            });
   }
 
   private Set<Match> findMatches(Graph<Post> graph) {

@@ -56,8 +56,8 @@ public class PostService {
     return dupes;
   }
 
-  public void removePost(PostId postId) throws IOException, InterruptedException {
-    redditClient.removePost(postId);
+  public void removePost(PostId postId, String reason) throws IOException, InterruptedException {
+    redditClient.removePost(postId, reason);
     postRepository
         .findByPostId(postId.id())
         .ifPresent(

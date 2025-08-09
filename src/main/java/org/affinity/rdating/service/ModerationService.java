@@ -32,7 +32,7 @@ public class ModerationService {
         .forEach(
             post -> {
               try {
-                postService.removePost(post.getId());
+                postService.removePost(post.getId(), "nsfw");
               } catch (IOException | InterruptedException e) {
                 logger.error("Failed to remove NSFW post: {}", post.getId(), e);
               }
@@ -45,7 +45,7 @@ public class ModerationService {
         .forEach(
             post -> {
               try {
-                postService.removePost(post.getId());
+                postService.removePost(post.getId(), "duplicate");
               } catch (IOException | InterruptedException e) {
                 logger.error("Failed to remove duplicate post: {}", post.getId(), e);
               }
