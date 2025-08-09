@@ -47,7 +47,7 @@ public class RegistrationService {
   public void addUsers(String subreddit) throws IOException, InterruptedException {
     Set<Post> posts =
         postService.getPostsFromRedditNewestFirst(subreddit).stream()
-            .filter(CollectionUtils.distinctByKey(Post::getAuthor))
+            .filter(CollectionUtils.distinctByKey(Post::author))
             .collect(Collectors.toSet());
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
     Map<Author, UserEntity> authorToUser =
@@ -57,16 +57,15 @@ public class RegistrationService {
                     userEntity -> new Author(userEntity.getUserName()), Function.identity()));
     logger.info("Fetched {} users", authorToUser.size());
     posts.stream()
-        .filter(post -> !authorToUser.containsKey(post.getAuthor()))
+        .filter(post -> !authorToUser.containsKey(post.author()))
         .forEach(
             post -> {
-              UserEntity userEntity = new UserEntity(post.getAuthor().username());
+              UserEntity userEntity = new UserEntity(post.author().username());
               userRepository.save(userEntity);
               PostEntity postEntity =
-                  new PostEntity(
-                      userEntity, post.getId().id(), post.getTitle(), post.getPermaLink());
+                  new PostEntity(userEntity, post.id().id(), post.title(), post.permaLink());
               postRepository.save(postEntity);
-              logger.info("Added new user: {}", post.getAuthor().username());
+              logger.info("Added new user: {}", post.author().username());
             });
   }
 

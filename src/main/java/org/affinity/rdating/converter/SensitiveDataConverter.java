@@ -6,15 +6,11 @@ package org.affinity.rdating.converter;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.affinity.rdating.service.EncryptionService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @Converter
 public class SensitiveDataConverter implements AttributeConverter<String, String> {
-
-  @Value("${key}")
-  private String encryptionKey;
 
   private final EncryptionService encryptionService;
 

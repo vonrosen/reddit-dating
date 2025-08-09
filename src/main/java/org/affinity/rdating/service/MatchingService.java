@@ -18,19 +18,16 @@ import org.springframework.stereotype.Service;
 public class MatchingService {
   private static final Logger logger = LoggerFactory.getLogger(MatchingService.class);
 
-  private final PostService postService;
   private final MatchRepository matchRepository;
   private final UpVoteService upVoteService;
   private final NotificationService notificationService;
   private final UserRepository userRepository;
 
   public MatchingService(
-      PostService postService,
       UpVoteService upVoteService,
       MatchRepository matchRepository,
       NotificationService notificationService,
       UserRepository userRepository) {
-    this.postService = postService;
     this.upVoteService = upVoteService;
     this.matchRepository = matchRepository;
     this.notificationService = notificationService;
@@ -45,7 +42,7 @@ public class MatchingService {
             .toList();
     logger.info("Fetched {} posts from subreddit: {}", posts.size(), subreddit);
     Map<Author, List<Post>> authorToPosts =
-        posts.stream().collect(Collectors.groupingBy(Post::getAuthor));
+        posts.stream().collect(Collectors.groupingBy(Post::author));
     Graph<Post> graph = buildGraph(subreddit, posts, authorToPosts);
     Set<Match> matches = findMatches(graph);
     removeExistingMatches(matches);
@@ -58,23 +55,16 @@ public class MatchingService {
     for (Match match : matches) {
       matchRepository.save(
           new MatchEntity(
-              match.getPost1().getAuthor().username(),
-              match.getPost2().getAuthor().username(),
-              match.getPost1().getPermaLink(),
-              match.getPost2().getPermaLink(),
+              match.post1().author().username(),
+              match.post2().author().username(),
+              match.post1().permaLink(),
+              match.post2().permaLink(),
               Instant.now()));
       notificationService.sendMatchMessage(
-          subreddit,
-          match.getPost1().getAuthor(),
-          match.getPost2().getAuthor(),
-          match.getPost2().getPermaLink());
+          subreddit, match.post1().author(), match.post2().author(), match.post2().permaLink());
       notificationService.sendMatchMessage(
-          subreddit,
-          match.getPost2().getAuthor(),
-          match.getPost1().getAuthor(),
-          match.getPost1().getPermaLink());
-      logger.info(
-          "New match found: {} and {}", match.getPost1().getAuthor(), match.getPost2().getAuthor());
+          subreddit, match.post2().author(), match.post1().author(), match.post1().permaLink());
+      logger.info("New match found: {} and {}", match.post1().author(), match.post2().author());
     }
   }
 
@@ -117,9 +107,9 @@ public class MatchingService {
     Set<Post> matches = new HashSet<>();
     for (Post edge : graph.edges(post)) {
       Set<Author> authors =
-          graph.edges(edge).stream().map(Post::getAuthor).collect(Collectors.toSet());
+          graph.edges(edge).stream().map(Post::author).collect(Collectors.toSet());
 
-      if (authors.contains(post.getAuthor())) {
+      if (authors.contains(post.author())) {
         matches.add(edge);
       }
     }
@@ -139,8 +129,8 @@ public class MatchingService {
   private void addEdgesFromUpVotes(
       String subreddit, Post post, Map<Author, List<Post>> authorToPosts, Graph<Post> graph)
       throws IOException, InterruptedException {
-    List<Upvote> upvotes = upVoteService.getUpvotes(post.getAuthor(), subreddit).stream().toList();
-    logger.info("Fetched {} upvotes for author: {}", upvotes.size(), post.getAuthor().username());
+    List<Upvote> upvotes = upVoteService.getUpvotes(post.author(), subreddit).stream().toList();
+    logger.info("Fetched {} upvotes for author: {}", upvotes.size(), post.author().username());
     for (Upvote upvote : upvotes) {
       List<Post> posts = authorToPosts.get(upvote.author());
       if (posts != null) {

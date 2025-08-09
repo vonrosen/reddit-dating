@@ -45,7 +45,7 @@ public class PostService {
   public List<Post> getDuplicatePosts(String subreddit) throws IOException, InterruptedException {
     Map<Author, List<Post>> authorToPosts =
         getPostsFromRedditNewestFirst(subreddit).stream()
-            .collect(Collectors.groupingBy(Post::getAuthor));
+            .collect(Collectors.groupingBy(Post::author));
     List<Post> dupes = new ArrayList<>();
     for (Author author : authorToPosts.keySet()) {
       List<Post> posts = authorToPosts.get(author);

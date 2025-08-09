@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.affinity.rdating.client.RedditClient;
 import org.affinity.rdating.client.UserAuthToken;
-import org.affinity.rdating.entity.UserRepository;
 import org.affinity.rdating.model.*;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,7 @@ public class UpVoteService {
   private final RedditClient redditClient;
   private final AuthorizationService authorizationService;
 
-  public UpVoteService(
-      RedditClient redditClient,
-      UserRepository userRepository,
-      AuthorizationService authorizationService) {
+  public UpVoteService(RedditClient redditClient, AuthorizationService authorizationService) {
     this.redditClient = redditClient;
     this.authorizationService = authorizationService;
   }

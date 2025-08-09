@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.affinity.rdating.model.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,15 +14,10 @@ public class ModerationService {
 
   private static final Logger logger = LoggerFactory.getLogger(ModerationService.class);
 
-  @Value("${reddit.baseUrl}")
-  private String redditUrl;
-
   private final PostService postService;
-  private final UserService userService;
 
-  public ModerationService(PostService postService, UserService userService) {
+  public ModerationService(PostService postService) {
     this.postService = postService;
-    this.userService = userService;
   }
 
   public void removeNsfw(String subreddit) throws IOException, InterruptedException {
@@ -32,9 +26,9 @@ public class ModerationService {
         .forEach(
             post -> {
               try {
-                postService.removePost(post.getId(), "nsfw");
+                postService.removePost(post.id(), "nsfw");
               } catch (IOException | InterruptedException e) {
-                logger.error("Failed to remove NSFW post: {}", post.getId(), e);
+                logger.error("Failed to remove NSFW post: {}", post.id(), e);
               }
             });
   }
@@ -45,9 +39,9 @@ public class ModerationService {
         .forEach(
             post -> {
               try {
-                postService.removePost(post.getId(), "duplicate");
+                postService.removePost(post.id(), "duplicate");
               } catch (IOException | InterruptedException e) {
-                logger.error("Failed to remove duplicate post: {}", post.getId(), e);
+                logger.error("Failed to remove duplicate post: {}", post.id(), e);
               }
             });
   }
