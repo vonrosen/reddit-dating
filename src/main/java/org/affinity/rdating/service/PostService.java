@@ -13,6 +13,7 @@ import org.affinity.rdating.client.RedditClient;
 import org.affinity.rdating.entity.PostRepository;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.model.PostId;
 import org.affinity.rdating.model.PostsAndAfter;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +56,10 @@ public class PostService {
     return dupes;
   }
 
-  public void removePost(String postId) throws IOException, InterruptedException {
+  public void removePost(PostId postId) throws IOException, InterruptedException {
     redditClient.removePost(postId);
     postRepository
-        .findByPostId(postId)
+        .findByPostId(postId.id())
         .ifPresent(
             postEntity -> {
               postEntity.setDeletedAt(Instant.now());

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import org.affinity.rdating.model.Author;
 import org.affinity.rdating.model.Post;
+import org.affinity.rdating.model.PostId;
 
 @Entity
 @Table(
@@ -107,7 +108,7 @@ public class PostEntity {
 
   @Transient
   public Post toPost() {
-    return new Post(postId, title, permalink, new Author(user.getUserName()), isNSFW);
+    return new Post(new PostId(postId), title, permalink, new Author(user.getUserName()), isNSFW);
   }
 
   public Boolean getNSFW() {

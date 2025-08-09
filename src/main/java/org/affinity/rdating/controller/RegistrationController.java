@@ -30,7 +30,7 @@ public class RegistrationController {
   @GetMapping("/register")
   public void register(@Param("state") String state, @Param("code") String code)
       throws IOException, InterruptedException {
-    registrationService.register(state, code);
+    registrationService.register(subreddit, state, code);
   }
 
   @Operation(summary = "Add users", description = "Add new users.")

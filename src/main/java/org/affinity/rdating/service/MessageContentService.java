@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageContentService {
 
+  @Value("${reddit.subreddit.name}")
+  private String subreddit;
+
   @Value("${reddit.baseUrl}")
   private String redditUrl;
 
@@ -36,9 +39,14 @@ public class MessageContentService {
 
   public String createRegistrationMessageContent(Author to, UUID stateToken) {
     return String.format(
-        "Hello %s,\n\nWelcome to RDating! To authorize RDating to match you with other daters click the following link.\n"
-            + "%s\n\n"
-            + "Best regards,\nThe RDating Team",
+        """
+                    Hello %s,
+
+                    Welcome to RDating! To authorize RDating to match you with other daters click the following link.
+                    %s
+
+                    Best regards,
+                    The RDating Team""",
         to.username(), getAuthorizationUrl(stateToken));
   }
 
@@ -51,5 +59,21 @@ public class MessageContentService {
         + "%26redirect_uri="
         + redirectUrl
         + "%26duration=permanent%26scope=history";
+  }
+
+  public String getRegisteredMessageSubject() {
+    return "Thank you for registering with RDating!";
+  }
+
+  public String createRegisteredMessageContent(Author to) {
+    return String.format(
+        """
+                    Hello %s,
+
+                    Thank you for registering with RDating! You can now start finding your matches at %s/r/%s.
+
+                    Best regards,
+                    The RDating Team""",
+        to.username(), redditUrl, subreddit);
   }
 }

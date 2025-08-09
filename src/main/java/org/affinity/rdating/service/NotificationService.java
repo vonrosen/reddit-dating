@@ -38,4 +38,13 @@ public class NotificationService {
         messageContentService.getRegistrationMessageSubject(),
         messageContentService.createRegistrationMessageContent(to, stateToken));
   }
+
+  public void sendRegisteredMessage(String subreddit, Author to)
+      throws IOException, InterruptedException {
+    redditClient.sendMessage(
+        subreddit,
+        to.username(),
+        messageContentService.getRegisteredMessageSubject(),
+        messageContentService.createRegisteredMessageContent(to));
+  }
 }

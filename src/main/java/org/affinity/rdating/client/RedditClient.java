@@ -86,7 +86,7 @@ public class RedditClient {
     for (RedditPostListing.Child child : redditPostListing.data.children) {
       posts.add(
           new Post(
-              child.data.id,
+              new PostId(child.data.id),
               child.data.title,
               child.data.permalink,
               new Author(child.data.author),
@@ -115,7 +115,7 @@ public class RedditClient {
   }
 
   @CounterEnabled
-  public void removePost(String postId) throws IOException, InterruptedException {
+  public void removePost(PostId postId) throws IOException, InterruptedException {
     AuthToken authToken = getAuthToken();
     HttpRequest userRequest =
         HttpRequest.newBuilder()
@@ -125,8 +125,7 @@ public class RedditClient {
             .header("Authorization", "Bearer " + authToken.getAccessToken())
             .POST(
                 HttpRequest.BodyPublishers.ofString(
-                    String.format(
-                        "api_type=json&id=%s&spam=True", ListingKind.POST.getKind() + "_" + postId)))
+                    String.format("api_type=json&id=%s&spam=True", postId.fullName())))
             .build();
     HttpResponse<String> response =
         httpClient.send(userRequest, HttpResponse.BodyHandlers.ofString());

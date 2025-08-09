@@ -63,7 +63,8 @@ public class RegistrationService {
               UserEntity userEntity = new UserEntity(post.getAuthor().username());
               userRepository.save(userEntity);
               PostEntity postEntity =
-                  new PostEntity(userEntity, post.getId(), post.getTitle(), post.getPermaLink());
+                  new PostEntity(
+                      userEntity, post.getId().id(), post.getTitle(), post.getPermaLink());
               postRepository.save(postEntity);
               logger.info("Added new user: {}", post.getAuthor().username());
             });
@@ -89,7 +90,8 @@ public class RegistrationService {
             });
   }
 
-  public void register(String state, String code) throws IOException, InterruptedException {
+  public void register(String subreddit, String state, String code)
+      throws IOException, InterruptedException {
     UserEntity userEntity = userRepository.findByAuthRequestStateToken(state).orElseThrow();
     UserAuthToken userAuthToken =
         redditClient.getUserAuthTokenFromCode(code, new Author(userEntity.getUserName()));
@@ -98,6 +100,7 @@ public class RegistrationService {
     userEntity.setAuthTokenExpiresAt(userAuthToken.getExpires());
     userEntity.setRegisteredAt(Instant.now());
     userRepository.save(userEntity);
+    notificationService.sendRegisteredMessage(subreddit, new Author(userEntity.getUserName()));
     logger.info("User {} registered successfully", userEntity.getUserName());
   }
 }

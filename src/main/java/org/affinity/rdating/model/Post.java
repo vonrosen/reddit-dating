@@ -7,13 +7,13 @@ import java.util.Objects;
 
 public class Post implements Comparable<Post> {
 
-  private final String id;
+  private final PostId id;
   private final String title;
   private final Author author;
   private final String permaLink;
   private final boolean isNSFW;
 
-  public Post(String id, String title, String permaLink, Author author, boolean isNSFW) {
+  public Post(PostId id, String title, String permaLink, Author author, boolean isNSFW) {
     this.id = id;
     this.title = title;
     this.author = author;
@@ -21,7 +21,7 @@ public class Post implements Comparable<Post> {
     this.isNSFW = isNSFW;
   }
 
-  public String getId() {
+  public PostId getId() {
     return id;
   }
 

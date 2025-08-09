@@ -8,10 +8,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.affinity.rdating.entity.*;
-import org.affinity.rdating.model.Author;
-import org.affinity.rdating.model.Match;
-import org.affinity.rdating.model.Post;
-import org.affinity.rdating.model.Upvote;
+import org.affinity.rdating.model.*;
 import org.affinity.rdating.util.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +85,9 @@ public class MatchingService {
             matchEntity ->
                 existingMatches.remove(
                     new Match(
-                        new Post("", "", "", new Author(matchEntity.getUser1()), false),
-                        new Post("", "", "", new Author(matchEntity.getUser2()), false))));
+                        new Post(new PostId(""), "", "", new Author(matchEntity.getUser1()), false),
+                        new Post(
+                            new PostId(""), "", "", new Author(matchEntity.getUser2()), false))));
   }
 
   private Set<Match> findMatches(Graph<Post> graph) {
